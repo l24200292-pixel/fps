@@ -1,3 +1,16 @@
+// 1. CAPTURADOR DE ERRORES EN PANTALLA (Para evitar usar F12)
+window.addEventListener('error', function(e) {
+    const box = document.getElementById('error-log');
+    if (box) {
+        box.style.display = 'block';
+        box.innerHTML += `<strong>⚠️ ERROR DE SCRIPT DEL JUEGO:</strong><br>
+                          <strong>Mensaje:</strong> ${e.message}<br>
+                          <strong>Archivo:</strong> ${e.filename ? e.filename.split('/').pop() : 'Desconocido'}<br>
+                          <strong>Línea:</strong> ${e.lineno}<br><br>`;
+    }
+});
+
+// 2. IMPORTACIONES REQUERIDAS
 import * as THREE from 'three';
 import Stats from 'three/addons/libs/stats.module.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -5,17 +18,16 @@ import { Octree } from 'three/addons/math/Octree.js';
 import { OctreeHelper } from 'three/addons/helpers/OctreeHelper.js';
 import { Capsule } from 'three/addons/math/Capsule.js';
 
-// Configuración inicial del reloj y escena
+// 3. CONFIGURACIÓN DEL ESCENARIO GRÁFICO
 const clock = new THREE.Clock();
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x88ccee);
 scene.fog = new THREE.Fog(0x88ccee, 0, 50);
 
-// Cámara
 const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.rotation.order = 'YXZ';
 
-// Iluminación
+// 4. ILUMINACIÓN
 const fillLight1 = new THREE.HemisphereLight(0x8dc1de, 0x00668d, 1.5);
 fillLight1.position.set(2, 1, 1);
 scene.add(fillLight1);
@@ -33,7 +45,7 @@ directionalLight.shadow.mapSize.width = 1024;
 directionalLight.shadow.mapSize.height = 1024;
 scene.add(directionalLight);
 
-// Renderizador y Contenedor
+// 5. RENDERIZADOR
 const container = document.getElementById('container');
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -43,11 +55,10 @@ renderer.shadowMap.type = THREE.VSMShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 container.appendChild(renderer.domElement);
 
-// Estadísticas de rendimiento (FPS Counter)
 const stats = new Stats();
 container.appendChild(stats.dom);
 
-// Constantes y variables de Física
+// 6. CONSTANTES DE FÍSICA Y CONTROL DEL JUGADOR
 const GRAVITY = 30;
 const STEPS_PER_FRAME = 5;
 
@@ -59,7 +70,7 @@ let playerOnFloor = false;
 
 const keyStates = {};
 
-// Eventos de teclado y ratón
+// 7. EVENTOS DE ENTRADA (TECLADO Y RATÓN)
 document.addEventListener('keydown', (event) => { keyStates[event.code] = true; });
 document.addEventListener('keyup', (event) => { keyStates[event.code] = false; });
 
@@ -82,7 +93,7 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// Mecánicas del Jugador y Colisiones
+// 8. FUNCIONES DE FÍSICA Y DESPLAZAMIENTO
 function playerCollisions() {
     const result = worldOctree.capsuleIntersect(playerCollider);
     playerOnFloor = false;
@@ -103,7 +114,7 @@ function updatePlayer(deltaTime) {
 
     if (!playerOnFloor) {
         playerVelocity.y -= GRAVITY * deltaTime;
-        damping *= 0.1; // Menor fricción en el aire
+        damping *= 0.1;
     }
 
     playerVelocity.addScaledVector(playerVelocity, damping);
@@ -152,7 +163,7 @@ function teleportPlayerIfOob() {
     }
 }
 
-// CARGA DEL ESCENARIO (Ruta adaptada exactamente a tu carpeta actual)
+// 9. CARGA DEL MAPA 3D (Ruta exacta a assets/models/fbx/)
 const loader = new GLTFLoader().setPath('./assets/models/fbx/');
 loader.load('collision-world.glb', (gltf) => {
     scene.add(gltf.scene);
@@ -166,13 +177,24 @@ loader.load('collision-world.glb', (gltf) => {
     });
 
     const helper = new OctreeHelper(worldOctree);
-    helper.visible = true; // Activo por defecto para que verifiques si el Octree se genera
+    helper.visible = true; // Activo para ver las líneas de colisión naranjas/verdes
     scene.add(helper);
 }, 
-(xhr) => { console.log((xhr.loaded / xhr.total * 100) + '% cargado'); },
-(error) => { console.error('Error al cargar el escenario:', error); });
+(xhr) => {
+    console.log((xhr.loaded / xhr.total * 100) + '% cargado');
+},
+(error) => {
+    const box = document.getElementById('error-log');
+    if (box) {
+        box.style.display = 'block';
+        box.innerHTML += `<strong>📂 ERROR DE MODELO 3D:</strong><br>
+                          No se pudo leer 'collision-world.glb'.<br>
+                          Verifica que el archivo esté guardado exactamente dentro de la carpeta: <br>
+                          <code style="background:#222; padding:2px 5px;">assets/models/fbx/</code>`;
+    }
+});
 
-// Bucle de Animación principal
+// 10. BUCLE DE EJECUCIÓN (ANIMATION LOOP)
 function animate() {
     const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
 

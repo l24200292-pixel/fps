@@ -5,8 +5,28 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link type="text/css" rel="stylesheet" href="./assets/css/styles.css">
+    <style>
+        #error-log {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #ff3333;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            font-family: monospace;
+            z-index: 9999;
+            max-width: 85%;
+            border: 2px solid #ff3333;
+            border-radius: 5px;
+            word-wrap: break-word;
+            display: none;
+            line-height: 1.5;
+        }
+    </style>
 </head>
 <body>
+    <div id="error-log"></div>
+
     <div id="container"></div>
 
     <script type="importmap">

@@ -4,9 +4,11 @@ body {
     overflow: hidden;
     background-color: #88ccee;
     font-family: sans-serif;
+    user-select: none;
 }
 
 #container {
     width: 100vw;
     height: 100vh;
+    display: block;
 }
