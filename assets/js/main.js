@@ -1,16 +1,16 @@
-// 1. CAPTURADOR DE ERRORES EN PANTALLA (Para evitar usar F12)
+// 1. CAPTURADOR DE ERRORES EN PANTALLA
 window.addEventListener('error', function(e) {
     const box = document.getElementById('error-log');
     if (box) {
         box.style.display = 'block';
-        box.innerHTML += `<strong>⚠️ ERROR DE SCRIPT DEL JUEGO:</strong><br>
+        box.innerHTML += `<strong>⚠️ ERROR DE SCRIPT:</strong><br>
                           <strong>Mensaje:</strong> ${e.message}<br>
                           <strong>Archivo:</strong> ${e.filename ? e.filename.split('/').pop() : 'Desconocido'}<br>
                           <strong>Línea:</strong> ${e.lineno}<br><br>`;
     }
 });
 
-// 2. IMPORTACIONES REQUERIDAS
+// 2. IMPORTACIONES DESDE EL IMPORTMAP
 import * as THREE from 'three';
 import Stats from 'three/addons/libs/stats.module.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -18,7 +18,7 @@ import { Octree } from 'three/addons/math/Octree.js';
 import { OctreeHelper } from 'three/addons/helpers/OctreeHelper.js';
 import { Capsule } from 'three/addons/math/Capsule.js';
 
-// 3. CONFIGURACIÓN DEL ESCENARIO GRÁFICO
+// 3. CONFIGURACIÓN DE LA ESCENA
 const clock = new THREE.Clock();
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x88ccee);
@@ -45,7 +45,7 @@ directionalLight.shadow.mapSize.width = 1024;
 directionalLight.shadow.mapSize.height = 1024;
 scene.add(directionalLight);
 
-// 5. RENDERIZADOR
+// 5. RENDERIZADOR Y CONTENEDOR
 const container = document.getElementById('container');
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -58,7 +58,7 @@ container.appendChild(renderer.domElement);
 const stats = new Stats();
 container.appendChild(stats.dom);
 
-// 6. CONSTANTES DE FÍSICA Y CONTROL DEL JUGADOR
+// 6. VARIABLES DE JUGADOR Y FÍSICAS
 const GRAVITY = 30;
 const STEPS_PER_FRAME = 5;
 
@@ -70,7 +70,7 @@ let playerOnFloor = false;
 
 const keyStates = {};
 
-// 7. EVENTOS DE ENTRADA (TECLADO Y RATÓN)
+// 7. EVENTOS DE CONTROL
 document.addEventListener('keydown', (event) => { keyStates[event.code] = true; });
 document.addEventListener('keyup', (event) => { keyStates[event.code] = false; });
 
@@ -93,7 +93,7 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// 8. FUNCIONES DE FÍSICA Y DESPLAZAMIENTO
+// 8. CÁLCULO DE COLISIONES
 function playerCollisions() {
     const result = worldOctree.capsuleIntersect(playerCollider);
     playerOnFloor = false;
@@ -163,7 +163,7 @@ function teleportPlayerIfOob() {
     }
 }
 
-// 9. CARGA DEL MAPA 3D (Ruta exacta a assets/models/fbx/)
+// 9. CARGA CORRECTA DESDE LA CARPETA ASSETS/MODELS/FBX/
 const loader = new GLTFLoader().setPath('./assets/models/fbx/');
 loader.load('collision-world.glb', (gltf) => {
     scene.add(gltf.scene);
@@ -177,7 +177,7 @@ loader.load('collision-world.glb', (gltf) => {
     });
 
     const helper = new OctreeHelper(worldOctree);
-    helper.visible = true; // Activo para ver las líneas de colisión naranjas/verdes
+    helper.visible = true; 
     scene.add(helper);
 }, 
 (xhr) => {
@@ -187,14 +187,12 @@ loader.load('collision-world.glb', (gltf) => {
     const box = document.getElementById('error-log');
     if (box) {
         box.style.display = 'block';
-        box.innerHTML += `<strong>📂 ERROR DE MODELO 3D:</strong><br>
-                          No se pudo leer 'collision-world.glb'.<br>
-                          Verifica que el archivo esté guardado exactamente dentro de la carpeta: <br>
-                          <code style="background:#222; padding:2px 5px;">assets/models/fbx/</code>`;
+        box.innerHTML += `<strong>📂 ERROR DE CARGA:</strong> No se encuentra el modelo 3D.<br>
+                          Asegúrate de que el archivo <code style="background:#222; padding:2px 4px;">collision-world.glb</code> esté guardado físicamente dentro de <code style="background:#222; padding:2px 4px;">assets/models/fbx/</code>`;
     }
 });
 
-// 10. BUCLE DE EJECUCIÓN (ANIMATION LOOP)
+// 10. BUCLE PRINCIPAL
 function animate() {
     const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
 
