@@ -1,61 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graficación 3D | Anahí Díaz Rosales</title>
-    
-    <link rel="icon" type="image/x-icon" href="favicon.png">
-    <link rel="stylesheet" href="./assets/css/main.css">
+    <title>Three.js - FPS Octree</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="./assets/css/styles.css">
 </head>
 <body>
+    <div id="container"></div>
 
-    <nav class="navbar">
-        <div class="dev-name">PROGRAMADOR: ANAHÍ DÍAZ ROSALES</div>
-        <div class="nav-links">
-            <a href="javascript:void(0)" class="btn-nav" onclick="loadDemo('minecraft.html', 'Minecraft')">Minecraft</a>
-            <a href="javascript:void(0)" class="btn-nav" onclick="loadDemo('map.html', 'Map Controls')">Map</a>
-            <a href="javascript:void(0)" class="btn-nav" onclick="loadDemo('orbit.html', 'Orbit Controls')">Orbit</a>
-            <a href="javascript:void(0)" class="btn-nav" onclick="loadDemo('pointerlock.html', 'Pointer Lock')">Pointer</a>
-            <a href="javascript:void(0)" class="btn-nav" onclick="loadDemo('transform.html', 'Transform Controls')">Transform</a>
-        </div>
-    </nav>
-
-    <div class="main-content">
-        <h1>Manipulación de Escenarios 3D</h1>
-        <p class="subtitle">Ingeniería en Sistemas Computacionales | Proyecto Final</p>
-        
-        <div class="demo-title" id="currentTitle">DEMO: MINECRAFT</div>
-        
-        <div class="demo-wrapper">
-            <iframe 
-                id="demoFrame" 
-                src="minecraft.html" 
-                class="demo-container" 
-                allow="autoplay; fullscreen; pointer-lock">
-            </iframe>
-        </div>
-    </div>
-
-    <footer>
-        Materia: Graficación | Docente: M.C. Víctor Manuel Pinedo Fernández<br>
-        <b>Anahí Díaz Rosales &copy; 2026 - Todos los derechos reservados</b>
-    </footer>
-
-    <script>
-        function loadDemo(url, name) {
-            const frame = document.getElementById('demoFrame');
-            const title = document.getElementById('currentTitle');
-            
-            // Efecto visual de carga
-            frame.style.opacity = "0.5";
-            
-            setTimeout(() => {
-                frame.src = url;
-                title.innerText = "DEMO: " + name.toUpperCase();
-                frame.style.opacity = "1";
-            }, 150);
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "./assets/build/three.module.js",
+                "three/addons/": "./assets/jsm/"
+            }
         }
     </script>
+
+    <script type="module" src="./assets/js/main.js"></script>
 </body>
 </html>
