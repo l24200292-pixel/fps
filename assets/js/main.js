@@ -1,4 +1,4 @@
-// 1. IMPORTACIONES DIRECTAS POR RUTA (Verás que cambian a su color normal en VS Code)
+// 1. IMPORTACIONES DIRECTAS POR RUTA (VS Code las pintará de color normal)
 import * as THREE from '../build/three.module.js';
 import Stats from '../jsm/libs/stats.module.js';
 import { GLTFLoader } from '../jsm/loaders/GLTFLoader.js';
@@ -6,7 +6,7 @@ import { Octree } from '../jsm/math/Octree.js';
 import { OctreeHelper } from '../jsm/helpers/OctreeHelper.js';
 import { Capsule } from '../jsm/math/Capsule.js';
 
-// 2. CONFIGURACIÓN DE LA ESCENA
+// 2. CONFIGURACIÓN DE LA ESCENA Y CÁMARA
 const clock = new THREE.Clock();
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x88ccee);
@@ -33,7 +33,7 @@ directionalLight.shadow.mapSize.width = 1024;
 directionalLight.shadow.mapSize.height = 1024;
 scene.add(directionalLight);
 
-// 4. RENDERIZADOR Y CONTENEDOR
+// 4. RENDERIZADOR Y PANEL DE FPS
 const container = document.getElementById('container');
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -46,7 +46,7 @@ container.appendChild(renderer.domElement);
 const stats = new Stats();
 container.appendChild(stats.dom);
 
-// 5. VARIABLES DE JUGADOR Y FÍSICAS
+// 5. VARIABLES DE FÍSICAS PARA EL JUGADOR
 const GRAVITY = 30;
 const STEPS_PER_FRAME = 5;
 
@@ -58,7 +58,7 @@ let playerOnFloor = false;
 
 const keyStates = {};
 
-// 6. EVENTOS DE CONTROL
+// 6. CONTROLES DE TECLADO Y RATÓN
 document.addEventListener('keydown', (event) => { keyStates[event.code] = true; });
 document.addEventListener('keyup', (event) => { keyStates[event.code] = false; });
 
@@ -81,7 +81,7 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// 7. CÁLCULO DE COLISIONES
+// 7. MOTOR DE COLISIONES
 function playerCollisions() {
     const result = worldOctree.capsuleIntersect(playerCollider);
     playerOnFloor = false;
@@ -151,7 +151,7 @@ function teleportPlayerIfOob() {
     }
 }
 
-// 8. CARGA DEL MODELO DESDE TU CARPETA ASSETS/MODELS/FBX/
+// 8. CARGA DIRECTA DEL MODELO GLB DESDE ASSETS/MODELS/FBX/
 const loader = new GLTFLoader().setPath('../models/fbx/');
 loader.load('collision-world.glb', (gltf) => {
     scene.add(gltf.scene);
@@ -169,9 +169,9 @@ loader.load('collision-world.glb', (gltf) => {
     scene.add(helper);
 }, 
 (xhr) => { console.log((xhr.loaded / xhr.total * 100) + '% cargado'); },
-(error) => { console.error('Error al cargar el modelo 3D:', error); });
+(error) => { console.error('Error al cargar el escenario:', error); });
 
-// 9. BUCLE PRINCIPAL (ANIMATION LOOP)
+// 9. BUCLE INFINITO DE RENDERIZADO
 function animate() {
     const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
 
