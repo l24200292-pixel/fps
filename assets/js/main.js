@@ -1,24 +1,12 @@
-// 1. CAPTURADOR DE ERRORES EN PANTALLA
-window.addEventListener('error', function(e) {
-    const box = document.getElementById('error-log');
-    if (box) {
-        box.style.display = 'block';
-        box.innerHTML += `<strong>⚠️ ERROR DE SCRIPT:</strong><br>
-                          <strong>Mensaje:</strong> ${e.message}<br>
-                          <strong>Archivo:</strong> ${e.filename ? e.filename.split('/').pop() : 'Desconocido'}<br>
-                          <strong>Línea:</strong> ${e.lineno}<br><br>`;
-    }
-});
+// 1. IMPORTACIONES DIRECTAS POR RUTA (Verás que cambian a su color normal en VS Code)
+import * as THREE from '../build/three.module.js';
+import Stats from '../jsm/libs/stats.module.js';
+import { GLTFLoader } from '../jsm/loaders/GLTFLoader.js';
+import { Octree } from '../jsm/math/Octree.js';
+import { OctreeHelper } from '../jsm/helpers/OctreeHelper.js';
+import { Capsule } from '../jsm/math/Capsule.js';
 
-// 2. IMPORTACIONES DESDE EL IMPORTMAP
-import * as THREE from 'three';
-import Stats from 'three/addons/libs/stats.module.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { Octree } from 'three/addons/math/Octree.js';
-import { OctreeHelper } from 'three/addons/helpers/OctreeHelper.js';
-import { Capsule } from 'three/addons/math/Capsule.js';
-
-// 3. CONFIGURACIÓN DE LA ESCENA
+// 2. CONFIGURACIÓN DE LA ESCENA
 const clock = new THREE.Clock();
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x88ccee);
@@ -27,7 +15,7 @@ scene.fog = new THREE.Fog(0x88ccee, 0, 50);
 const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.rotation.order = 'YXZ';
 
-// 4. ILUMINACIÓN
+// 3. ILUMINACIÓN
 const fillLight1 = new THREE.HemisphereLight(0x8dc1de, 0x00668d, 1.5);
 fillLight1.position.set(2, 1, 1);
 scene.add(fillLight1);
@@ -45,7 +33,7 @@ directionalLight.shadow.mapSize.width = 1024;
 directionalLight.shadow.mapSize.height = 1024;
 scene.add(directionalLight);
 
-// 5. RENDERIZADOR Y CONTENEDOR
+// 4. RENDERIZADOR Y CONTENEDOR
 const container = document.getElementById('container');
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -58,7 +46,7 @@ container.appendChild(renderer.domElement);
 const stats = new Stats();
 container.appendChild(stats.dom);
 
-// 6. VARIABLES DE JUGADOR Y FÍSICAS
+// 5. VARIABLES DE JUGADOR Y FÍSICAS
 const GRAVITY = 30;
 const STEPS_PER_FRAME = 5;
 
@@ -70,7 +58,7 @@ let playerOnFloor = false;
 
 const keyStates = {};
 
-// 7. EVENTOS DE CONTROL
+// 6. EVENTOS DE CONTROL
 document.addEventListener('keydown', (event) => { keyStates[event.code] = true; });
 document.addEventListener('keyup', (event) => { keyStates[event.code] = false; });
 
@@ -93,7 +81,7 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// 8. CÁLCULO DE COLISIONES
+// 7. CÁLCULO DE COLISIONES
 function playerCollisions() {
     const result = worldOctree.capsuleIntersect(playerCollider);
     playerOnFloor = false;
@@ -163,8 +151,8 @@ function teleportPlayerIfOob() {
     }
 }
 
-// 9. CARGA CORRECTA DESDE LA CARPETA ASSETS/MODELS/FBX/
-const loader = new GLTFLoader().setPath('./assets/models/fbx/');
+// 8. CARGA DEL MODELO DESDE TU CARPETA ASSETS/MODELS/FBX/
+const loader = new GLTFLoader().setPath('../models/fbx/');
 loader.load('collision-world.glb', (gltf) => {
     scene.add(gltf.scene);
     worldOctree.fromGraphNode(gltf.scene);
@@ -180,19 +168,10 @@ loader.load('collision-world.glb', (gltf) => {
     helper.visible = true; 
     scene.add(helper);
 }, 
-(xhr) => {
-    console.log((xhr.loaded / xhr.total * 100) + '% cargado');
-},
-(error) => {
-    const box = document.getElementById('error-log');
-    if (box) {
-        box.style.display = 'block';
-        box.innerHTML += `<strong>📂 ERROR DE CARGA:</strong> No se encuentra el modelo 3D.<br>
-                          Asegúrate de que el archivo <code style="background:#222; padding:2px 4px;">collision-world.glb</code> esté guardado físicamente dentro de <code style="background:#222; padding:2px 4px;">assets/models/fbx/</code>`;
-    }
-});
+(xhr) => { console.log((xhr.loaded / xhr.total * 100) + '% cargado'); },
+(error) => { console.error('Error al cargar el modelo 3D:', error); });
 
-// 10. BUCLE PRINCIPAL
+// 9. BUCLE PRINCIPAL (ANIMATION LOOP)
 function animate() {
     const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
 
