@@ -106,15 +106,14 @@
 			container.appendChild( stats.domElement );
 
 			const GRAVITY = 30;
-			const NUM_SPHERES = 100; // Cantidad de cubos activos
-			const CUBE_SIZE = 0.4;   // Tamaño del nuevo objeto
+			const NUM_SPHERES = 100; 
+			const CUBE_SIZE = 0.4;   
 			const STEPS_PER_FRAME = 5;
 
-			// --- CAMBIO DE OBJETO: Creación de Cubos en lugar de Esferas ---
 			const boxGeometry = new THREE.BoxGeometry( CUBE_SIZE, CUBE_SIZE, CUBE_SIZE );
 			const boxMaterial = new THREE.MeshStandardMaterial( { color: 0xff3333, roughness: 0.4 } );
 
-			const spheres = []; // Mantenemos el nombre interno para no romper las funciones físicas originales
+			const spheres = []; 
 			let sphereIdx = 0;
 
 			for ( let i = 0; i < NUM_SPHERES; i ++ ) {
@@ -124,8 +123,8 @@
 				scene.add( boxMesh );
 
 				spheres.push( {
-					mesh: boxMesh, // Almacena el cubo visual
-					collider: new THREE.Sphere( new THREE.Vector3( 0, - 100, 0 ), CUBE_SIZE / 2 ), // Colisionador proporcional
+					mesh: boxMesh, 
+					collider: new THREE.Sphere( new THREE.Vector3( 0, - 100, 0 ), CUBE_SIZE / 2 ), 
 					velocity: new THREE.Vector3()
 				} );
 			}
@@ -232,6 +231,7 @@
 				}
 			}
 
+			// Optimización de colisiones mutuas
 			function spheresCollisions() {
 				for ( let i = 0, length = spheres.length; i < length; i ++ ) {
 					const s1 = spheres[ i ];
@@ -278,8 +278,6 @@
 
 				for ( const sphere of spheres ) {
 					sphere.mesh.position.copy( sphere.collider.center );
-					
-					// Efecto añadido: Hace rotar los cubos de acuerdo a su velocidad en el aire
 					if( sphere.velocity.lengthSq() > 0.2 ) {
 						sphere.mesh.rotation.x += sphere.velocity.z * deltaTime * 0.3;
 						sphere.mesh.rotation.y += sphere.velocity.x * deltaTime * 0.3;
@@ -294,6 +292,7 @@
 				return playerDirection;
 			}
 
+			// Movimiento lateral corregido
 			function getSideVector() {
 				camera.getWorldDirection( playerDirection );
 				playerDirection.y = 0;
@@ -314,9 +313,9 @@
 				}
 			}
 
-			// Servidor CDN jsDelivr súper compatible y seguro para GitHub Pages
+			// URL DE RESERVA ALTERNATIVA DESDE UNPKG (Altamente disponible en redes restringidas)
 			const loader = new GLTFLoader();
-			loader.load( 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/models/gltf/collision-world.glb', ( gltf ) => {
+			loader.load( 'https://unpkg.com/three@0.160.0/examples/models/gltf/collision-world.glb', ( gltf ) => {
 				scene.add( gltf.scene );
 				worldOctree.fromGraphNode( gltf.scene );
 
